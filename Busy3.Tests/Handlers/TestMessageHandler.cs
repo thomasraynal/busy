@@ -9,7 +9,7 @@ namespace Busy.Tests
     {
         public void Handle(TestMessage message)
         {
-            TestContext.Increment();
+            TestsMessageDispatchingContext.Increment();
         }
 
         public void Handle(IMessage message)

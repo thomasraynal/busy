@@ -9,6 +9,15 @@ namespace Busy
 
         private readonly MessageTypeDescriptor _descriptor;
 
+        public MessageTypeId(Type messageType)
+        {
+            _descriptor = MessageUtil.GetMessageTypeDescriptor(messageType);
+        }
+
+        public MessageTypeId(string fullName)
+        {
+            _descriptor = MessageUtil.GetMessageTypeDescriptor(fullName);
+        }
 
         public string FullName => _descriptor?.FullName;
 

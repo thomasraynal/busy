@@ -10,7 +10,7 @@ using StructureMap;
 
 namespace Busy.Tests
 {
-    public static class TestContext2
+    public static class TestsMessageDispatchingContext2
     {
         private static volatile int _counter;
 
@@ -29,7 +29,7 @@ namespace Busy.Tests
             Interlocked.Exchange(ref _counter, 0);
         }
     }
-    public static class TestContext
+    public static class TestsMessageDispatchingContext
     {
         private static volatile int _counter;
 
@@ -50,18 +50,13 @@ namespace Busy.Tests
     }
 
     [TestFixture]
-    public class BusyTests
+    public class TestsMessageDispatching
     {
-        [Test]
-        public async Task TestBus()
-        {
-
-        }
 
         [Test]
         public async Task TestMessageQueue()
         {
-            TestContext.Reset();
+            TestsMessageDispatchingContext.Reset();
 
             var logger = new MockLogger();
 
@@ -73,7 +68,7 @@ namespace Busy.Tests
 
             var queue = new DispatchQueue(logger, 10, "TestQueue");
 
-            Assert.AreEqual(0, TestContext.Get());
+            Assert.AreEqual(0, TestsMessageDispatchingContext.Get());
 
             queue.Start();
 
@@ -87,14 +82,14 @@ namespace Busy.Tests
 
             await Task.Delay(1000);
 
-            Assert.AreEqual(100, TestContext.Get());
+            Assert.AreEqual(100, TestsMessageDispatchingContext.Get());
         }
 
         [Test]
         public async Task TestMessageDispatcher()
         {
-            TestContext.Reset();
-            TestContext2.Reset();
+            TestsMessageDispatchingContext.Reset();
+            TestsMessageDispatchingContext2.Reset();
 
             var logger = new MockLogger();
 
@@ -111,8 +106,8 @@ namespace Busy.Tests
                 .ToList();
 
 
-            Assert.AreEqual(0, TestContext.Get());
-            Assert.AreEqual(0, TestContext2.Get());
+            Assert.AreEqual(0, TestsMessageDispatchingContext.Get());
+            Assert.AreEqual(0, TestsMessageDispatchingContext2.Get());
 
             var messageDispatcher = new MessageDispatcher(logger, container);
 
@@ -120,9 +115,9 @@ namespace Busy.Tests
 
             await Task.Delay(1000);
 
-            Assert.AreEqual(100, TestContext.Get());
+            Assert.AreEqual(100, TestsMessageDispatchingContext.Get());
 
-            Assert.AreEqual(100, TestContext2.Get());
+            Assert.AreEqual(100, TestsMessageDispatchingContext2.Get());
         }
     }
 }

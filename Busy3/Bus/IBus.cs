@@ -8,15 +8,14 @@ namespace Busy
     public interface IBus : IDisposable
     {
         PeerId PeerId { get; }
-        bool IsRunning { get; }
         String DirectoryEndpoint { get; }
 
-        void Configure(PeerId peerId);
+        void Configure(PeerId peerId, String endpoint);
 
         void Publish(IEvent message);
         Task<ICommandResult> Send(ICommand message);
         Task<ICommandResult> Send(ICommand message, Peer peer);
-        //Task<IDisposable> SubscribeAsync(SubscriptionRequest request);
+        Task Subscribe(SubscriptionRequest request);
 
         void Start();
         void Stop();
