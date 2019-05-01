@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Busy;
-using Busy.Handler;
 using NUnit.Framework;
 using StructureMap;
 
@@ -53,11 +52,18 @@ namespace Busy.Tests
     public class TestsMessageDispatching
     {
 
+        [SetUp]
+        public void SetUp()
+        {
+            TestsMessageDispatchingContext.Reset();
+            TestsMessageDispatchingContext2.Reset();
+        }
+
+
         [Test]
         public async Task TestMessageQueue()
         {
-            TestsMessageDispatchingContext.Reset();
-
+         
             var logger = new MockLogger();
 
             var container = new Container(configuration => configuration.AddRegistry<AppRegistry>());
@@ -88,8 +94,6 @@ namespace Busy.Tests
         [Test]
         public async Task TestMessageDispatcher()
         {
-            TestsMessageDispatchingContext.Reset();
-            TestsMessageDispatchingContext2.Reset();
 
             var logger = new MockLogger();
 

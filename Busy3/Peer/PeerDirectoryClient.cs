@@ -99,7 +99,7 @@ namespace Busy
             var self = _peers.First(peer => peer.Key == bus.PeerId);
 
 
-
+            self.Value.SetSubscriptionsForType(subscriptionsForTypes, DateTime.Now);
 
             //var command = new UpdatePeerSubscriptionsForTypesCommand(_self.Id, _timestampProvider.NextUtcTimestamp(), subscriptions);
 

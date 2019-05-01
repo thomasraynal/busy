@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Busy.Tests
 {
-    public class JsonSerializer : IMessageSerializer
+    public class JsonMessageSerializer : IMessageSerializer
     {
         public IMessage Deserialize(MessageTypeId messageTypeId, Stream stream)
         {

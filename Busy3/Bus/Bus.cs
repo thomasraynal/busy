@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,15 +11,18 @@ namespace Busy
     {
         private readonly IPeerDirectory _directory;
         private readonly IMessageSerializer _serializer;
+        private readonly ITransport _transport;
         private readonly IMessageDispatcher _messageDispatcher;
         private readonly IBusConfiguration _configuration;
         private readonly Dictionary<Subscription, int> _subscriptions = new Dictionary<Subscription, int>();
 
-        public Bus(IPeerDirectory directory, IMessageDispatcher messageDispatcher, IBusConfiguration configuration)
+        public Bus(IPeerDirectory directory, IMessageSerializer serializer, ITransport transport, IMessageDispatcher messageDispatcher, IBusConfiguration configuration)
         {
             _directory = directory;
             _messageDispatcher = messageDispatcher;
             _configuration = configuration;
+            _serializer = serializer;
+            _transport = transport;
         }
 
         public PeerId PeerId { get; private set; }
@@ -35,27 +39,45 @@ namespace Busy
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
         public void Publish(IEvent message)
         {
-            var peers = _directory.GetPeersHandlingMessage(message);
-
-            foreach(var peer in peers)
-            {
-                
-            }
+            var peersHandlingMessage = _directory.GetPeersHandlingMessage(message);
+            SendTransportMessage(null, message, peersHandlingMessage, true);
         }
 
         public Task<ICommandResult> Send(ICommand message)
         {
-            throw new NotImplementedException();
+            var peers = _directory.GetPeersHandlingMessage(message);
+            return Send(message, peers[0]);
         }
 
         public Task<ICommandResult> Send(ICommand message, Peer peer)
         {
-            throw new NotImplementedException();
+
+            var transportMessage = ToTransportMessage(message);
+
+            var peers = new[] { peer };
+
+            _transport.Send(transportMessage, peers);
+
+            var result = new CommandResult(0, string.Empty, null);
+
+            return Task.FromResult(result as ICommandResult);
+
+           
+
+        }
+
+        private void SendTransportMessage(Guid? messageId, IMessage message, IList<Peer> peers, bool logEnabled, bool locallyHandled = false)
+        {
+            var transportMessage = ToTransportMessage(message);
+
+            if (messageId != null)
+                transportMessage.Id = messageId.Value;
+
+            _transport.Send(transportMessage, peers);
         }
 
         public void Start()
@@ -66,7 +88,7 @@ namespace Busy
 
         public void Stop()
         {
-            throw new NotImplementedException();
+       
         }
 
         public async Task Subscribe(SubscriptionRequest request)
@@ -152,6 +174,16 @@ namespace Busy
                 subscriptionUpdates.Add(subscriptionsByTypes.GetValueOrDefault(updatedMessageId, new SubscriptionsForType(updatedMessageId)));
 
             await _directory.UpdateSubscriptionsAsync(this, subscriptionUpdates).ConfigureAwait(false);
+        }
+
+        protected TransportMessage ToTransportMessage(IMessage message) => _serializer.ToTransportMessage(message, PeerId, EndPoint);
+
+        private IMessage ToMessage(TransportMessage transportMessage)
+            => ToMessage(transportMessage.MessageTypeId, transportMessage.Content, transportMessage);
+
+        private IMessage ToMessage(MessageTypeId messageTypeId, Stream messageStream, TransportMessage transportMessage)
+        {
+            return _serializer.ToMessage(transportMessage, messageTypeId, messageStream);
         }
     }
 }

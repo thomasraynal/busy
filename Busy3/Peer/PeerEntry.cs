@@ -26,7 +26,8 @@ namespace Busy
         {
             lock (_peerSubscriptionsByMessageType)
             {
-                var subscriptions = _peerSubscriptionsByMessageType.SelectMany(x => x.Value.BindingKeys.Select(bk => new Subscription(x.Key, bk)))
+                var subscriptions = _peerSubscriptionsByMessageType
+                                                         .SelectMany(x => x.Value.BindingKeys.Select(bk => new Subscription(x.Key, bk)))
                                                          .Distinct()
                                                          .ToArray();
 
