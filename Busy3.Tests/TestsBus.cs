@@ -16,10 +16,6 @@ namespace Busy.Tests
             TestsBusContext.Increment();
         }
 
-        public void Handle(IMessage message)
-        {
-            Handle(message as DoSomething);
-        }
     }
 
     public class TestBusTransport : ITransport

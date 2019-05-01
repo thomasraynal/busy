@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetMQTests", "NetMQTests\NetMQTests.csproj", "{A7806BF2-10C9-48A2-AAC5-B626B757BD44}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Busy3", "Busy3\Busy3.csproj", "{54BD5633-7420-41B4-952B-12944F34AD66}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Busy3.Tests", "Busy3.Tests\Busy3.Tests.csproj", "{4C4C0917-3399-46BE-AEFD-832A14F708D2}"
@@ -15,10 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A7806BF2-10C9-48A2-AAC5-B626B757BD44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A7806BF2-10C9-48A2-AAC5-B626B757BD44}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A7806BF2-10C9-48A2-AAC5-B626B757BD44}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A7806BF2-10C9-48A2-AAC5-B626B757BD44}.Release|Any CPU.Build.0 = Release|Any CPU
 		{54BD5633-7420-41B4-952B-12944F34AD66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{54BD5633-7420-41B4-952B-12944F34AD66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54BD5633-7420-41B4-952B-12944F34AD66}.Release|Any CPU.ActiveCfg = Release|Any CPU

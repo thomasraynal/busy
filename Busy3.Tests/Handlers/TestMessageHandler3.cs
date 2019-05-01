@@ -10,10 +10,5 @@ namespace Busy.Tests.Handlers
         {
             TestsMessageDispatchingContext2.Increment();
         }
-
-        public void Handle(IMessage message)
-        {
-            Handle(message as TestMessage2);
-        }
     }
 }

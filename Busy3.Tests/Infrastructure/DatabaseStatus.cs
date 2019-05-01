@@ -24,13 +24,6 @@ namespace Busy.Tests
         public void Handle(DatabaseStatus message)
         {
             HasBeenHandled = true;
-
-            Console.WriteLine("This was handled");
-        }
-
-        public void Handle(IMessage message)
-        {
-            throw new NotImplementedException();
         }
     }
 }

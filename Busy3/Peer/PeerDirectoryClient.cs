@@ -56,11 +56,6 @@ namespace Busy
             throw new NotImplementedException();
         }
 
-        public void Handle(IMessage message)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Handle(PeerStarted message)
         {
             AddOrUpdatePeerEntry(message.PeerDescriptor);

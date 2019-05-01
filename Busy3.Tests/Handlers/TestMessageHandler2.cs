@@ -11,9 +11,5 @@ namespace Busy.Tests
             TestsMessageDispatchingContext.Increment();
         }
 
-        public void Handle(IMessage message)
-        {
-            Handle(message as TestMessage);
-        }
     }
 }

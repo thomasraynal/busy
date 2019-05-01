@@ -22,18 +22,11 @@ namespace Busy.Tests
         public void Handle(MessageA message)
         {
         }
-
-        public void Handle(IMessage message)
-        {
-        }
     }
 
     public class HandlerB : IMessageHandler<MessageB>
     {
         public void Handle(MessageB message)
-        {
-        }
-        public void Handle(IMessage message)
         {
         }
     }

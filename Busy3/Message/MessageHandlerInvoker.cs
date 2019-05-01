@@ -30,7 +30,10 @@ namespace Busy
             {
                 try
                 {
-                    handler.Handle(message.Message);
+                    handler
+                        .GetType()
+                        .GetMethod("Handle")
+                        .Invoke(handler, new object[] { message.Message });
                 }
                 catch(Exception ex)
                 {
