@@ -13,50 +13,29 @@ namespace Busy
 
         public MessageTypeId MessageTypeId { get; set; }
 
-        private byte[] ContentBytes
-        {
-            get => GetContentBytes();
-            set => Content = new MemoryStream(value, 0, value.Length, false, true);
-        }
+        public byte[] Content { get; set; }
 
-        public Stream Content { get; set; }
-
-        public List<PeerId> PersistentPeerIds { get; set; }
-
-        public TransportMessage(MessageTypeId messageTypeId, Stream content, Peer sender)
+        public TransportMessage(MessageTypeId messageTypeId, byte[] content, Peer sender)
             : this(messageTypeId, content, sender.Id, sender.EndPoint)
         {
         }
 
-        public TransportMessage(MessageTypeId messageTypeId, Stream content, PeerId senderId, string senderEndPoint)
+        public TransportMessage(MessageTypeId messageTypeId, byte[] content, PeerId senderId, string senderEndPoint)
             : this(messageTypeId, content, senderId)
         {
         }
 
-        public TransportMessage(MessageTypeId messageTypeId, Stream content, PeerId senderId)
+        public TransportMessage(MessageTypeId messageTypeId, byte[] content, PeerId senderId)
         {
             Id = Guid.NewGuid();
+            Sender = senderId;
             MessageTypeId = messageTypeId;
             Sender = senderId;
             Content = content;
         }
 
-        internal TransportMessage()
+        public TransportMessage()
         {
-        }
-
-        public byte[] GetContentBytes()
-        {
-            if (Content == null)
-                return Array.Empty<byte>();
-
-            var position = Content.Position;
-            var buffer = new byte[Content.Length];
-            Content.Position = 0;
-            Content.Read(buffer, 0, buffer.Length);
-            Content.Position = position;
-
-            return buffer;
         }
     }
 }

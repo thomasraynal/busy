@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Busy
 {
-    public readonly struct MessageTypeId : IEquatable<MessageTypeId>
+    public class MessageTypeId : IEquatable<MessageTypeId>
     {
 
         private readonly MessageTypeDescriptor _descriptor;
@@ -12,14 +12,20 @@ namespace Busy
         public MessageTypeId(Type messageType)
         {
             _descriptor = MessageUtil.GetMessageTypeDescriptor(messageType);
+            FullName = _descriptor.FullName;
         }
 
         public MessageTypeId(string fullName)
         {
             _descriptor = MessageUtil.GetMessageTypeDescriptor(fullName);
+            FullName = fullName;
         }
 
-        public string FullName => _descriptor?.FullName;
+        public MessageTypeId()
+        {
+        }
+
+        public string FullName { get; set; }
 
         public Type GetMessageType() => _descriptor?.MessageType;
 

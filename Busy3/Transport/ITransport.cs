@@ -8,7 +8,6 @@ namespace Busy
     {
         event Action<TransportMessage> MessageReceived;
 
-        void Configure(PeerId peerId);
         void Start();
         void Stop();
 

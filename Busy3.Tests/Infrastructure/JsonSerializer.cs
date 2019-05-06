@@ -8,19 +8,19 @@ namespace Busy.Tests
 {
     public class JsonMessageSerializer : IMessageSerializer
     {
-        public IMessage Deserialize(MessageTypeId messageTypeId, Stream stream)
+        public T Deserialize<T>(byte[] stream)
         {
-
-            var memoryStream = new MemoryStream();
-            stream.CopyTo(memoryStream);
-
-            return JsonConvert.DeserializeObject(Encoding.UTF8.GetString(memoryStream.ToArray()), messageTypeId.GetMessageType()) as IMessage;
+            return JsonConvert.DeserializeObject<T>(Encoding.UTF8.GetString(stream));
         }
 
-        public Stream Serialize(IMessage message)
+        public object Deserialize(byte[] stream, Type type)
         {
-            var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
-            return new MemoryStream(bytes);
+            return JsonConvert.DeserializeObject(Encoding.UTF8.GetString(stream), type);
+        }
+
+        public byte[] Serialize(object message)
+        {
+            return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
         }
     }
 }

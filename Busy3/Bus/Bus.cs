@@ -66,8 +66,6 @@ namespace Busy
 
             return Task.FromResult(result as ICommandResult);
 
-           
-
         }
 
         private void SendTransportMessage(Guid? messageId, IMessage message, IList<Peer> peers, bool logEnabled, bool locallyHandled = false)
@@ -83,17 +81,20 @@ namespace Busy
         public void Start()
         {
             var self = new Peer(PeerId, EndPoint);
+
+            _transport.Start();
+            
             _directory.RegisterAsync(this, self, GetSubscriptions()).Wait();
         }
 
         public void Stop()
         {
-       
+            _transport.Stop();
+            _subscriptions.Clear();
         }
 
         public async Task Subscribe(SubscriptionRequest request)
         {
-
             request.MarkAsSubmitted();
 
             if (request.Batch != null)
@@ -181,9 +182,9 @@ namespace Busy
         private IMessage ToMessage(TransportMessage transportMessage)
             => ToMessage(transportMessage.MessageTypeId, transportMessage.Content, transportMessage);
 
-        private IMessage ToMessage(MessageTypeId messageTypeId, Stream messageStream, TransportMessage transportMessage)
+        private IMessage ToMessage(MessageTypeId messageTypeId, byte[] messageStream, TransportMessage transportMessage)
         {
-            return _serializer.ToMessage(transportMessage, messageTypeId, messageStream);
+            return _serializer.ToMessage(transportMessage);
         }
     }
 }

@@ -7,7 +7,8 @@ namespace Busy
 {
     public interface IMessageSerializer
     {
-        Stream Serialize(IMessage message);
-        IMessage Deserialize(MessageTypeId messageTypeId, Stream stream);
+        byte[] Serialize(object message);
+        T Deserialize<T>(byte[] stream);
+        object Deserialize(byte[] stream, Type type);
     }
 }

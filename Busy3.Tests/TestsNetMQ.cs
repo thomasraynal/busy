@@ -1,5 +1,6 @@
 ﻿using NetMQ;
 using NetMQ.Sockets;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,11 @@ using System.Threading.Tasks;
 
 namespace Busy.Tests
 {
+    public class Message
+    {
+        public string Subject { get; set; }
+        public string Endpoint { get; set; }
+    }
 
     public static class TestsNetMQContext
     {
@@ -50,13 +56,15 @@ namespace Busy.Tests
                 {
                     while (true)
                     {
-                        var command = receiver.ReceiveFrameString();
+                        var command = receiver.ReceiveFrameBytes();
 
-                        if (command.StartsWith(RegisterCommand))
+                        var msg = JsonConvert.DeserializeObject<Message>(Encoding.UTF32.GetString(command));
+
+                        if (msg.Subject == RegisterCommand)
                         {
                             TestsNetMQContext.Increment();
 
-                            var peer = command.Split(Separator)[1];
+                            var peer = msg.Endpoint;
 
                             lock (_locker)
                             {
@@ -64,7 +72,14 @@ namespace Busy.Tests
 
                                 using (var sender = new PushSocket(peer))
                                 {
-                                    sender.SendFrame(Ack);
+                                    var message = new Message()
+                                    {
+                                        Subject = NetMQPeerDirectory.Ack
+                                    };
+
+                                    var ack = Encoding.UTF32.GetBytes(JsonConvert.SerializeObject(message));
+
+                                    sender.SendFrame(ack);
                                 }
                             }
                         }
@@ -104,9 +119,11 @@ namespace Busy.Tests
                 {
                     while (true)
                     {
-                        var command = receiver.ReceiveFrameString();
+                        var command = receiver.ReceiveFrameBytes();
 
-                        switch (command)
+                        var msg = JsonConvert.DeserializeObject<Message>(Encoding.UTF32.GetString(command));
+
+                        switch (msg.Subject)
                         {
                             case NetMQPeerDirectory.Ack:
                                 TestsNetMQContext.Increment();
@@ -129,9 +146,17 @@ namespace Busy.Tests
             {
                 using (var sender = new PushSocket($"{DirectoryEndpoint}"))
                 {
-                    sender.SendFrame($"{NetMQPeerDirectory.RegisterCommand}{NetMQPeerDirectory.Separator}{Endpoint}");
+                    var message = new Message()
+                    {
+                        Endpoint = Endpoint,
+                        Subject = NetMQPeerDirectory.RegisterCommand
+                    };
 
-                   await Task.Delay(100);
+                    var msg = Encoding.UTF32.GetBytes(JsonConvert.SerializeObject(message));
+
+                    sender.SendFrame(msg);
+
+                    await Task.Delay(100);
                 }
             });
         }

@@ -14,12 +14,12 @@ namespace Busy
 
         public static IMessage ToMessage(this IMessageSerializer serializer, TransportMessage transportMessage)
         {
-            return ToMessage(serializer, transportMessage, transportMessage.MessageTypeId, transportMessage.Content);
+            return ToMessage(serializer, transportMessage, transportMessage.Content);
         }
 
-        public static IMessage ToMessage(this IMessageSerializer serializer, TransportMessage transportMessage, MessageTypeId messageTypeId, Stream content)
+        public static IMessage ToMessage(this IMessageSerializer serializer, TransportMessage transportMessage, byte[] content)
         {
-            return serializer.Deserialize(messageTypeId, content);
+            return serializer.Deserialize(content, Type.GetType(transportMessage.MessageTypeId.FullName)) as IMessage;
         }
 
     }

@@ -4,14 +4,21 @@ using System.Text;
 
 namespace Busy
 {
-    public readonly struct PeerId
+    public class PeerId
     {
         private readonly string _value;
 
-        public PeerId(string value) : this()
+        public PeerId(string value)
         {
             _value = value;
         }
+
+        public PeerId()
+        {
+            _value = string.Empty;
+        }
+
+        public string Value { get; set; }
 
         public bool Equals(PeerId other) => string.Equals(_value, other._value);
         public override bool Equals(object obj) => obj is PeerId && Equals((PeerId)obj);
