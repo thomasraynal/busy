@@ -44,9 +44,17 @@ namespace Busy.Tests
 
 
             var matchedPeers = subscriptionTree.GetPeers(allParis.BindingKey);
+
+            Assert.AreEqual(1, matchedPeers.Count);
+
             matchedPeers = subscriptionTree.GetPeers(allKo.BindingKey);
+
+            Assert.AreEqual(0, matchedPeers.Count);
+
             matchedPeers = subscriptionTree.GetPeers(allParisKo.BindingKey);
-           
+
+            Assert.AreEqual(2, matchedPeers.Count);
+
         }
     }
 }

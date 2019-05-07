@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Busy
 {
-    public partial class PeerDirectoryClient : IPeerDirectory,
+    public class PeerDirectoryClient : IPeerDirectory,
                                                   IMessageHandler<PeerStarted>,
                                                   IMessageHandler<PeerStopped>,
                                                   IMessageHandler<PeerSubscriptionsUpdated>
@@ -17,7 +17,11 @@ namespace Busy
 
         private readonly ConcurrentDictionary<MessageTypeId, PeerSubscriptionTree> _globalSubscriptionsIndex = new ConcurrentDictionary<MessageTypeId, PeerSubscriptionTree>();
         private readonly ConcurrentDictionary<PeerId, PeerEntry> _peers = new ConcurrentDictionary<PeerId, PeerEntry>();
-  
+
+        public PeerDirectoryClient()
+        {
+        }
+
         public IList<Peer> GetPeersHandlingMessage(IMessage message)
         {
             return GetPeersHandlingMessage(MessageBinding.FromMessage(message));

@@ -4,35 +4,16 @@ using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Busy.Tests
 {
-    public class DoSomethingCommandHandler : IMessageHandler<DoSomething>
-    {
-        public void Handle(DoSomething message)
-        {
-            TestsBusContext.Increment();
-        }
-
-    }
-
-
-    public class DatabaseStatusEventHandler : IMessageHandler<DatabaseStatus>
-    {
-        public void Handle(DatabaseStatus message)
-        {
-            TestsBusContext.Increment();
-        }
-
-    }
-
 
     [TestFixture]
     public class TestsIntegration
     {
-        private Bus _bus;
-        private TransportConfiguration _transportConfiguration;
+        private IBus _bus;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -40,32 +21,21 @@ namespace Busy.Tests
 
             var logger = new MockLogger();
             var directoryClient = new PeerDirectoryClient();
-            var container = new Container(configuration => configuration.AddRegistry<AppRegistry>());
+            var container = new Container(configuration => configuration.AddRegistry<BusRegistry>());
             var messageDispatcher = new MessageDispatcher(logger, container);
-
-            _transportConfiguration = new TransportConfiguration()
-            {
-                InboundEndPoint = "tcp://localhost:8080",
-                PeerId = new PeerId($"{Guid.NewGuid()}")
-            };
-
-
-
-            var busConfiguration = new BusConfiguration(_transportConfiguration.InboundEndPoint);
             var serializer = new JsonMessageSerializer();
 
+            _bus = BusFactory.Create("TestE2E", "tcp://localhost:8585", "tcp://localhost:8585");
+            _bus.Start();
 
-            var transport = new Transport(_transportConfiguration, serializer, logger);
 
-            _bus = new Bus(directoryClient, serializer, transport, messageDispatcher, busConfiguration);
-
-          
         }
 
 
         [Test]
-        public async Task ShouldMakeSubscription()
+        public async Task ShouldTestE2E()
         {
+            TestsBusContext.Reset();
 
             var subscription1 = Subscription.Matching<DatabaseStatus>(status => status.DatacenterName == "Paris" && status.Status == "Ko");
             var subscription2 = Subscription.Any<DoSomething>();
@@ -80,24 +50,20 @@ namespace Busy.Tests
                 Status = "Ko"
             };
 
-            _bus.Configure(_transportConfiguration.PeerId, _transportConfiguration.InboundEndPoint);
-
-            _bus.Start();
-
             await _bus.Subscribe(new SubscriptionRequest(subscription1));
             await _bus.Subscribe(new SubscriptionRequest(subscription2));
 
-            //_bus.Publish(@event);
-
-            //await Task.Delay(200);
-
-            //Assert.AreEqual(1, TestsBusContext.Get());
-
             await _bus.Send(command);
 
-            await Task.Delay(200);
+            await Task.Delay(500);
 
             Assert.AreEqual(1, TestsBusContext.Get());
+
+            _bus.Publish(@event);
+
+            await Task.Delay(500);
+
+            Assert.AreEqual(2, TestsBusContext.Get());
 
         }
     }

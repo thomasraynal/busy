@@ -9,15 +9,6 @@ using System.Threading.Tasks;
 
 namespace Busy.Tests
 {
-    public class DosSomethingCommandHandler : IMessageHandler<DoSomething>
-    {
-        public void Handle(DoSomething message)
-        {
-            TestsBusContext.Increment();
-        }
-
-    }
-
     public class TestBusTransport : ITransport
     {
         public TestBusTransport(PeerId peerId)
@@ -37,6 +28,11 @@ namespace Busy.Tests
         }
 
         public void Configure(PeerId peerId)
+        {
+
+        }
+
+        public void Configure(PeerId peerId, string endpoint)
         {
 
         }
@@ -80,25 +76,25 @@ namespace Busy.Tests
     [TestFixture]
     public class TestsBus
     {
-        private Bus _bus;
-        private PeerId _peerId;
+        private IBus _bus;
+        private string _peerId;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            
+
             var logger = new MockLogger();
             var directoryClient = new PeerDirectoryClient();
-            var container = new Container(configuration => configuration.AddRegistry<AppRegistry>());
+            var container = new Container(configuration => configuration.AddRegistry<BusRegistry>());
             var messageDispatcher = new MessageDispatcher(logger, container);
-            var busConfiguration = new BusConfiguration("http://localhost:8080");
             var serializer = new JsonMessageSerializer();
 
-            _peerId = new PeerId($"{Guid.NewGuid()}");
+            container.Configure((conf) =>
+            {
+                conf.For<ITransport>().Use<TestBusTransport>();
+            });
 
-            var transport = new TestBusTransport(_peerId);
-            _bus = new Bus(directoryClient, serializer, transport, messageDispatcher, busConfiguration);
-
+            _bus = BusFactory.Create("TestE2E", "tcp://localhost:8080", "tcp://localhost:8080", container);
         }
 
         [SetUp]
@@ -123,8 +119,6 @@ namespace Busy.Tests
                 DatacenterName = "Paris",
                 Status = "Ko"
             };
-
-            _bus.Configure(_peerId, "http://localhost:8080");
 
             _bus.Start();
 

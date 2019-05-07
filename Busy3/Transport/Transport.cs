@@ -14,7 +14,6 @@ namespace Busy
 {
     public class Transport : ITransport
     {
-        private TransportConfiguration _configuration;
         private IMessageSerializer _serializer;
         private ILogger _logger;
         private ConcurrentDictionary<PeerId, PushSocket> _outboundSockets;
@@ -25,17 +24,22 @@ namespace Busy
         private Thread _disconnectThread;
         private volatile bool _isListening;
 
-        public Transport(TransportConfiguration configuration, IMessageSerializer serializer, ILogger logger)
+        public Transport(IMessageSerializer serializer, ILogger logger)
         {
             _outboundSockets = new ConcurrentDictionary<PeerId, PushSocket>();
-            _configuration = configuration;
             _serializer = serializer;
             _logger = logger;
         }
 
-        public PeerId PeerId => _configuration.PeerId;
+        public void Configure(PeerId peerId, string endpoint)
+        {
+            PeerId = peerId;
+            InboundEndPoint = endpoint;
+        }
 
-        public string InboundEndPoint => _configuration.InboundEndPoint;
+        public PeerId PeerId { get; private set; }
+
+        public string InboundEndPoint { get; private set; }
 
         public event Action<TransportMessage> MessageReceived;
 

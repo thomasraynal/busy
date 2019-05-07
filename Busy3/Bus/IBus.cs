@@ -10,7 +10,7 @@ namespace Busy
         PeerId PeerId { get; }
         String DirectoryEndpoint { get; }
 
-        void Configure(PeerId peerId, String endpoint);
+        void Configure(PeerId peerId, String endpoint, string directoryEndpoint);
 
         void Publish(IEvent message);
         Task<ICommandResult> Send(ICommand message);

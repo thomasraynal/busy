@@ -66,7 +66,7 @@ namespace Busy.Tests
          
             var logger = new MockLogger();
 
-            var container = new Container(configuration => configuration.AddRegistry<AppRegistry>());
+            var container = new Container(configuration => configuration.AddRegistry<BusRegistry>());
 
             var messages = Enumerable.Range(0, 50)
                 .Select(_ => new TestMessage())
@@ -97,7 +97,7 @@ namespace Busy.Tests
 
             var logger = new MockLogger();
 
-            var container = new Container(configuration => configuration.AddRegistry<AppRegistry>());
+            var container = new Container(configuration => configuration.AddRegistry<BusRegistry>());
 
             var messages1 = Enumerable.Range(0, 50)
                 .Select(_ => new TestMessage())

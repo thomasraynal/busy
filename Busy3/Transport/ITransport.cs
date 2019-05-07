@@ -14,6 +14,8 @@ namespace Busy
         PeerId PeerId { get; }
         string InboundEndPoint { get; }
 
+        void Configure(PeerId peerId, string endpoint);
+
         void Send(TransportMessage message, IEnumerable<Peer> peers);
         void AckMessage(TransportMessage transportMessage);
     }

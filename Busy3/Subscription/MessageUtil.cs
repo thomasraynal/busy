@@ -51,7 +51,7 @@ namespace Busy
 
         private static MessageTypeDescriptor LoadMessageTypeDescriptor(Type messageType)
         {
-            var fullName = TypeUtil.GetFullnameWithNoAssemblyOrVersion(messageType);
+            var fullName = messageType.AssemblyQualifiedName;
             return GetMessageTypeDescriptor(fullName);
         }
     }

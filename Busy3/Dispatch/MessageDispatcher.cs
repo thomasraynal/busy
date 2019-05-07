@@ -31,6 +31,24 @@ namespace Busy
 
         }
 
+        public void Dispatch(List<MessageDispatch> dispatchs)
+        {
+            var groups = dispatchs.GroupBy(dispatch => dispatch.Message.GetType());
+
+            foreach (var messages in groups)
+            {
+
+                var queue = GetQueue(messages.Key);
+                var invoker = GetInvoker(messages.Key);
+
+                foreach (var message in messages)
+                {
+                    queue.RunOrEnqueue(message, invoker);
+                }
+
+            }
+        }
+
         private DispatchQueue GetQueue(Type messageType)
         {
             return _dispatchQueues.GetOrAdd(messageType, (key) =>
@@ -53,24 +71,6 @@ namespace Busy
 
                 return messageInvoker;
             });
-        }
-
-        public void Dispatch(List<MessageDispatch> dispatchs)
-        {
-            var groups = dispatchs.GroupBy(dispatch => dispatch.Message.GetType());
-
-            foreach (var messages in groups)
-            {
-
-                var queue = GetQueue(messages.Key);
-                var invoker = GetInvoker(messages.Key);
-
-                foreach (var message in messages)
-                {
-                    queue.RunOrEnqueue(message, invoker);
-                }
-
-            }
         }
     }
 }

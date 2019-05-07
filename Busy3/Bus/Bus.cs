@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StructureMap;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,30 +12,31 @@ namespace Busy
     {
         private readonly IPeerDirectory _directory;
         private readonly IMessageSerializer _serializer;
-        private readonly ITransport _transport;
+        private ITransport _transport;
+        private readonly IContainer _container;
         private readonly IMessageDispatcher _messageDispatcher;
-        private readonly IBusConfiguration _configuration;
         private readonly Dictionary<Subscription, int> _subscriptions = new Dictionary<Subscription, int>();
+        private object transport;
 
-        public Bus(IPeerDirectory directory, IMessageSerializer serializer, ITransport transport, IMessageDispatcher messageDispatcher, IBusConfiguration configuration)
+        public Bus(IPeerDirectory directory, IMessageSerializer serializer, IMessageDispatcher messageDispatcher, IContainer container)
         {
             _directory = directory;
             _messageDispatcher = messageDispatcher;
-            _configuration = configuration;
             _serializer = serializer;
-            _transport = transport;
+            _container = container;
         }
 
-        public PeerId PeerId { get; private set; }
+        public PeerId PeerId { get; internal set; }
 
-        public string EndPoint { get; private set; }
+        public string EndPoint { get; internal set; }
 
-        public string DirectoryEndpoint => _configuration.DirectoryEndpoint;
+        public string DirectoryEndpoint { get; internal set; }
 
-        public void Configure(PeerId peerId, string endpoint)
+        public void Configure(PeerId peerId, string endpoint, string directoryEndpoint)
         {
             PeerId = peerId;
             EndPoint = endpoint;
+            DirectoryEndpoint = directoryEndpoint;
         }
 
         public void Dispose()
@@ -82,8 +84,18 @@ namespace Busy
         {
             var self = new Peer(PeerId, EndPoint);
 
+            _transport = _container.GetInstance<ITransport>();
+            _transport.Configure(PeerId, EndPoint);
+
             _transport.Start();
-            
+
+            _transport.MessageReceived += (transportMessage) =>
+            {
+                var message = ToMessage(transportMessage);
+                var dispach = new MessageDispatch(message);
+                _messageDispatcher.Dispatch(dispach);
+            };
+
             _directory.RegisterAsync(this, self, GetSubscriptions()).Wait();
         }
 

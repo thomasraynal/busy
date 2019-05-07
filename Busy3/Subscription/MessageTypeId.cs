@@ -13,12 +13,13 @@ namespace Busy
         {
             _descriptor = MessageUtil.GetMessageTypeDescriptor(messageType);
             FullName = _descriptor.FullName;
+            QualifiedName = GetFullnameWithNoAssemblyOrVersion(messageType);
         }
 
         public MessageTypeId(string fullName)
         {
             _descriptor = MessageUtil.GetMessageTypeDescriptor(fullName);
-            FullName = fullName;
+            FullName = QualifiedName = fullName;
         }
 
         public MessageTypeId()
@@ -26,6 +27,8 @@ namespace Busy
         }
 
         public string FullName { get; set; }
+
+        public string QualifiedName { get; set; }
 
         public Type GetMessageType() => _descriptor?.MessageType;
 
@@ -35,8 +38,8 @@ namespace Busy
 
         public override string ToString()
         {
-            var lastDotIndex = FullName.LastIndexOf('.');
-            return lastDotIndex != -1 ? FullName.Substring(lastDotIndex + 1) : FullName;
+            var lastDotIndex = QualifiedName.LastIndexOf('.');
+            return lastDotIndex != -1 ? QualifiedName.Substring(lastDotIndex + 1) : QualifiedName;
         }
 
         public bool Equals(MessageTypeId other) => _descriptor == other._descriptor;
@@ -47,5 +50,32 @@ namespace Busy
         public static bool operator ==(MessageTypeId left, MessageTypeId right) => left.Equals(right);
         public static bool operator !=(MessageTypeId left, MessageTypeId right) => !left.Equals(right);
 
+
+        private string GetFullnameWithNoAssemblyOrVersion(Type messageType)
+        {
+            if (!messageType.IsGenericType)
+                return messageType.FullName;
+
+            var genericTypeDefinition = messageType.GetGenericTypeDefinition();
+            var builder = new StringBuilder();
+            if (messageType.IsNested)
+                builder.AppendFormat("{0}+", messageType.DeclaringType.FullName);
+            else
+                builder.AppendFormat("{0}.", genericTypeDefinition.Namespace);
+
+            var backQuoteIndex = genericTypeDefinition.Name.IndexOf('`');
+            builder.Append(genericTypeDefinition.Name.Substring(0, backQuoteIndex));
+            builder.Append("<");
+            foreach (var genericArgument in messageType.GetGenericArguments())
+            {
+                if (genericArgument.IsGenericType)
+                    throw new InvalidOperationException("Nested generics are not supported");
+                builder.AppendFormat("{0}.{1}, ", genericArgument.Namespace, genericArgument.Name);
+            }
+
+            builder.Length -= 2;
+            builder.Append(">");
+            return builder.ToString();
+        }
     }
 }

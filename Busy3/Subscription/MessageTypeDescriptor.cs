@@ -23,7 +23,7 @@ namespace Busy
 
         public static MessageTypeDescriptor Load(string fullName)
         {
-            var messageType = TypeUtil.Resolve(fullName);
+            var messageType = Type.GetType(fullName);
             var isPersistent = messageType == null || !Attribute.IsDefined(messageType, typeof(TransientAttribute));
             var isInfrastructure = messageType != null && Attribute.IsDefined(messageType, typeof(InfrastructureAttribute));
 

@@ -59,7 +59,7 @@ namespace Busy.Tests
         [OneTimeSetUp]
         public void Setup()
         {
-            _container = new Container(configuration => configuration.AddRegistry<AppRegistry>());
+            _container = new Container(configuration => configuration.AddRegistry<BusRegistry>());
         }
 
         [Test]

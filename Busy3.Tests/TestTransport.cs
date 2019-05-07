@@ -62,14 +62,16 @@ namespace Busy.Tests
             var transportConfiguration = new TransportConfiguration()
             {
                 InboundEndPoint = "tcp://localhost:7979",
-                PeerId = new PeerId($"{Guid.NewGuid()}")
+                PeerId = new PeerId("TestTransport")
             };
 
             var receiver = new Peer(transportConfiguration.PeerId, transportConfiguration.InboundEndPoint);
 
             var serializer = new JsonMessageSerializer();
             var logger = new MockLogger();
-            var transport = new Transport(transportConfiguration, serializer, logger);
+            var transport = new Transport(serializer, logger);
+
+            transport.Configure(transportConfiguration.PeerId, transportConfiguration.InboundEndPoint);
 
             transport.Start();
 
@@ -118,7 +120,8 @@ namespace Busy.Tests
             var serializer = new JsonMessageSerializer();
             var logger = new MockLogger();
 
-            var transport = new Transport(transportConfiguration, serializer, logger);
+            var transport = new Transport(serializer, logger);
+            transport.Configure(transportConfiguration.PeerId, transportConfiguration.InboundEndPoint);
 
             var testTransportMessage = new TestTransportMessage();
             var message = serializer.Serialize(testTransportMessage);

@@ -42,7 +42,6 @@ namespace Busy.Tests
                 Status = "Ok"
             };
 
-
             var peer1 = new Peer(new PeerId("Abc.Testing." + Guid.NewGuid()), "tcp://localhost:8080");
             var peer2 = new Peer(new PeerId("Abc.Testing." + Guid.NewGuid()), "tcp://localhost:8181");
 
