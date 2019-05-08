@@ -49,14 +49,13 @@ namespace Busy
             _queue.Add(new DispatchQueueEntry(dispatch, invoker));
         }
 
-
-
         public void Start()
         {
             if (_isRunning)
                 return;
 
             _isRunning = true;
+
             _thread = new Thread(ThreadProc)
             {
                 IsBackground = true,
@@ -133,7 +132,7 @@ namespace Busy
                         {
                             SynchronizationContext.SetSynchronizationContext(null);
 
-                            entry.Invoker.InvokeMessageHandler(entry.Dispatch);
+                            entry.Invoker.InvokeMessageHandler(entry.Dispatch).Wait();
 
                             break;
                         }

@@ -5,6 +5,7 @@ using System.Text;
 namespace Busy.Tests
 {
     [Routable]
+    [Asynchronous]
     public class DatabaseStatus : IEvent
     {
         [RoutingPosition(1)]

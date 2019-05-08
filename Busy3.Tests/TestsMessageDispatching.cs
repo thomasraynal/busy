@@ -73,6 +73,7 @@ namespace Busy.Tests
                 .Select(msg => new MessageDispatch(msg));
 
             var queue = new DispatchQueue(logger, 10, "TestQueue");
+            var cache = container.GetInstance<IMessageHandlerInvokerCache>();
 
             Assert.AreEqual(0, TestsMessageDispatchingContext.Get());
 
@@ -81,7 +82,7 @@ namespace Busy.Tests
             foreach (var dispatch in messages)
             {
                 var type = typeof(IMessageHandler<>).MakeGenericType(dispatch.Message.GetType());
-                var invoker = new MessageHandlerInvoker(container, MessageHandlerInvokerMode.Synchronous, type);
+                var invoker = new MessageHandlerInvoker(cache, MessageHandlerInvokerMode.Synchronous, type);
 
                 queue.RunOrEnqueue(dispatch, invoker);
             }

@@ -18,17 +18,8 @@ namespace Busy.Tests
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-
-            var logger = new MockLogger();
-            var directoryClient = new PeerDirectoryClient();
-            var container = new Container(configuration => configuration.AddRegistry<BusRegistry>());
-            var messageDispatcher = new MessageDispatcher(logger, container);
-            var serializer = new JsonMessageSerializer();
-
             _bus = BusFactory.Create("TestE2E", "tcp://localhost:8585", "tcp://localhost:8585");
             _bus.Start();
-
-
         }
 
 

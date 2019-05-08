@@ -135,9 +135,6 @@ namespace Busy
             {
                 var sender = _outboundSockets.AddOrUpdate(target.Id, (peerId) => new PushSocket(target.EndPoint), (peerId, socket) => socket); var payload = _serializer.Serialize(transportMessage);
                 sender.SendFrame(payload);
-
-                Task.Delay(20).Wait();
-
             }
         }
 

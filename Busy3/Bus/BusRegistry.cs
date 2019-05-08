@@ -11,6 +11,7 @@ namespace Busy
         public BusRegistry()
         {
             For<IMessageDispatcher>().Use<MessageDispatcher>().Singleton();
+            For<IMessageHandlerInvokerCache>().Use<MessageHandlerInvokerCache>().Singleton();
             For<ITransport>().Use<Transport>().Singleton();
             For<IBus>().Use<Bus>().Singleton();
             For<IPeerDirectory>().Use<PeerDirectoryClient>();

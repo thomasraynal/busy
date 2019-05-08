@@ -7,13 +7,16 @@ using System.Threading.Tasks;
 
 namespace Busy
 {
+
+
     public class MessageHandlerInvoker : IMessageHandlerInvoker
     {
-        private IContainer _container;
+        private IMessageHandlerInvokerCache _cache;
 
-        public MessageHandlerInvoker(IContainer container, MessageHandlerInvokerMode mode, Type messageHandlerType)
+        public MessageHandlerInvoker(IMessageHandlerInvokerCache cache, MessageHandlerInvokerMode mode, Type messageHandlerType)
         {
-            _container = container;
+            _cache = cache;
+
             MessageHandlerType = messageHandlerType;
             Mode = mode;
         }
@@ -24,18 +27,16 @@ namespace Busy
 
         public Task InvokeMessageHandler(IMessageDispatch message)
         {
-            var handlers = _container.GetAllInstances(MessageHandlerType).Cast<IMessageHandler>();
+            var handlers = _cache.GetHandlers(MessageHandlerType);
 
             foreach (var handler in handlers)
             {
                 try
                 {
-                    handler
-                        .GetType()
-                        .GetMethod("Handle")
-                        .Invoke(handler, new object[] { message.Message });
+                    var invoker = _cache.GetMethodInfo(handler.GetType());
+                    invoker.Invoke(handler, new object[] { message.Message });
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     message.SetHandled(MessageHandlerType, ex);
                 }

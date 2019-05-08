@@ -13,14 +13,14 @@ namespace Busy
         private readonly ConcurrentDictionary<Type, DispatchQueue> _dispatchQueues;
         private readonly ConcurrentDictionary<Type, MessageHandlerInvoker> _invokers;
         private readonly ILogger _logger;
-        private readonly IContainer _container;
+        private readonly IMessageHandlerInvokerCache _cache;
 
         public MessageDispatcher(ILogger logger, IContainer container)
         {
             _dispatchQueues = new ConcurrentDictionary<Type, DispatchQueue>();
             _invokers = new ConcurrentDictionary<Type, MessageHandlerInvoker>();
             _logger = logger;
-            _container = container;
+            _cache = container.GetInstance<IMessageHandlerInvokerCache>();
         }
         public void Dispatch(MessageDispatch dispatch)
         {
@@ -66,8 +66,12 @@ namespace Busy
             return _invokers.GetOrAdd(messageType, (key) =>
             {
                 var type = typeof(IMessageHandler<>).MakeGenericType(messageType);
+                var isAsync = messageType.GetCustomAttributes(true)
+                                      .FirstOrDefault(attribute => attribute.GetType() == typeof(AsynchronousAttribute)) != null;
 
-                var messageInvoker = new MessageHandlerInvoker(_container, MessageHandlerInvokerMode.Synchronous, type);
+                var mode = isAsync ? MessageHandlerInvokerMode.Asynchronous : MessageHandlerInvokerMode.Synchronous;
+
+                var messageInvoker = new MessageHandlerInvoker(_cache, mode, type);
 
                 return messageInvoker;
             });
