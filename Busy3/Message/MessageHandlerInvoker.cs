@@ -33,7 +33,7 @@ namespace Busy
             {
                 try
                 {
-                    var invoker = _cache.GetMethodInfo(handler.GetType());
+                    var invoker = _cache.GetMethodInfo(handler.GetType(), message.Message.GetType());
                     invoker.Invoke(handler, new object[] { message.Message });
                 }
                 catch (Exception ex)

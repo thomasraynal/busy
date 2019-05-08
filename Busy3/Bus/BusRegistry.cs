@@ -14,14 +14,18 @@ namespace Busy
             For<IMessageHandlerInvokerCache>().Use<MessageHandlerInvokerCache>().Singleton();
             For<ITransport>().Use<Transport>().Singleton();
             For<IBus>().Use<Bus>().Singleton();
-            For<IPeerDirectory>().Use<PeerDirectoryClient>();
+            For<IPeerDirectory>().Use<PeerDirectoryClient>().Singleton();
+            Forward<IPeerDirectory, IMessageHandler<PeerStarted>>();
+            Forward<IPeerDirectory, IMessageHandler<PeerStopped>>();
+            Forward<IPeerDirectory, IMessageHandler<UpdatePeerSubscriptionsForTypesCommand>>();
+            Forward<IPeerDirectory, IMessageHandler<PeerSubscriptionsForTypesUpdated>>();
 
             Scan(scanner =>
             {
                 scanner.AssembliesAndExecutablesFromApplicationBaseDirectory();
                 scanner.WithDefaultConventions();
                 scanner.LookForRegistries();
-                scanner.ConnectImplementationsToTypesClosing(typeof(IMessageHandler<>));
+                scanner.AddAllTypesOf(typeof(IMessageHandler<>));
             });
 
         }

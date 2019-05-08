@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Busy
 {
-    public interface IDirectoryConfiguration
+    public interface IPeerDirectoryConfiguration
     {
         TimeSpan PeerPingInterval { get; }
         TimeSpan PeerPingTimeout { get; }

@@ -78,16 +78,14 @@ namespace Busy.Tests
     {
         private IBus _bus;
         private string _peerId;
+        private IPeerDirectory _directory;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-
-            var logger = new MockLogger();
-            var directoryClient = new PeerDirectoryClient();
             var container = new Container(configuration => configuration.AddRegistry<BusRegistry>());
-            var messageDispatcher = new MessageDispatcher(logger, container);
-            var serializer = new JsonMessageSerializer();
+
+            _directory = container.GetInstance<IPeerDirectory>();
 
             container.Configure((conf) =>
             {
@@ -124,6 +122,9 @@ namespace Busy.Tests
 
             await _bus.Subscribe(new SubscriptionRequest(subscription1));
             await _bus.Subscribe(new SubscriptionRequest(subscription2));
+
+            //as the transport is mocked, register manually
+            await _directory.RegisterAsync(_bus.Self, _bus.GetSubscriptions());
 
             _bus.Publish(@event);
 

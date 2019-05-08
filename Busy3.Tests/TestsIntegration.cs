@@ -22,7 +22,6 @@ namespace Busy.Tests
             _bus.Start();
         }
 
-
         [Test]
         public async Task ShouldTestE2E()
         {
@@ -42,7 +41,12 @@ namespace Busy.Tests
             };
 
             await _bus.Subscribe(new SubscriptionRequest(subscription1));
+
+            await Task.Delay(500);
+
             await _bus.Subscribe(new SubscriptionRequest(subscription2));
+
+            await Task.Delay(500);
 
             await _bus.Send(command);
 

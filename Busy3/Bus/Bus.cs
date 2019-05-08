@@ -16,8 +16,7 @@ namespace Busy
         private readonly IContainer _container;
         private readonly IMessageDispatcher _messageDispatcher;
         private readonly Dictionary<Subscription, int> _subscriptions = new Dictionary<Subscription, int>();
-        private object transport;
-
+       
         public Bus(IPeerDirectory directory, IMessageSerializer serializer, IMessageDispatcher messageDispatcher, IContainer container)
         {
             _directory = directory;
@@ -27,6 +26,8 @@ namespace Busy
         }
 
         public PeerId PeerId { get; internal set; }
+
+        public Peer Self { get; internal set; }
 
         public string EndPoint { get; internal set; }
 
@@ -46,13 +47,16 @@ namespace Busy
         public void Publish(IEvent message)
         {
             var peersHandlingMessage = _directory.GetPeersHandlingMessage(message);
-            SendTransportMessage(null, message, peersHandlingMessage, true);
+            SendTransportMessage(null, message, peersHandlingMessage);
         }
 
-        public Task<ICommandResult> Send(ICommand message)
+        public async Task<ICommandResult> Send(ICommand message)
         {
             var peers = _directory.GetPeersHandlingMessage(message);
-            return Send(message, peers[0]);
+
+            if (peers.Count == 0) return CommandResult.Empty;
+
+            return await Send(message, peers[0]);
         }
 
         public Task<ICommandResult> Send(ICommand message, Peer peer)
@@ -70,7 +74,7 @@ namespace Busy
 
         }
 
-        private void SendTransportMessage(Guid? messageId, IMessage message, IList<Peer> peers, bool logEnabled, bool locallyHandled = false)
+        private void SendTransportMessage(Guid? messageId, IMessage message, IList<Peer> peers)
         {
             var transportMessage = ToTransportMessage(message);
 
@@ -82,7 +86,9 @@ namespace Busy
 
         public void Start()
         {
-            var self = new Peer(PeerId, EndPoint);
+            Self = new Peer(PeerId, EndPoint);
+
+            _directory.Configure(this);
 
             _transport = _container.GetInstance<ITransport>();
             _transport.Configure(PeerId, EndPoint);
@@ -96,7 +102,8 @@ namespace Busy
                 _messageDispatcher.Dispatch(dispach);
             };
 
-            _directory.RegisterAsync(this, self, GetSubscriptions()).Wait();
+            PerformAutoSubscribe();
+
         }
 
         public void Stop()
@@ -146,6 +153,20 @@ namespace Busy
             }
         }
 
+        private void PerformAutoSubscribe()
+        {
+
+            var autoSubscribes = new[]{
+                    Subscription.Any<UpdatePeerSubscriptionsForTypesCommand>(),
+                    Subscription.Any<PeerStopped>(),
+                    Subscription.Any<PeerStarted>(),
+                    Subscription.Any<PeerSubscriptionsForTypesUpdated>()
+                };
+
+            _directory.RegisterAsync(Self, autoSubscribes).Wait();
+
+        }
+
         private async Task SendSubscriptionsAsync(IEnumerable<Subscription> subscriptions)
         {
 
@@ -169,7 +190,7 @@ namespace Busy
             }
         }
 
-        private IEnumerable<Subscription> GetSubscriptions()
+        public IEnumerable<Subscription> GetSubscriptions()
         {
             lock (_subscriptions)
             {
@@ -186,7 +207,7 @@ namespace Busy
             foreach (var updatedMessageId in updatedTypes)
                 subscriptionUpdates.Add(subscriptionsByTypes.GetValueOrDefault(updatedMessageId, new SubscriptionsForType(updatedMessageId)));
 
-            await _directory.UpdateSubscriptionsAsync(this, subscriptionUpdates).ConfigureAwait(false);
+            await _directory.UpdateSubscriptionsAsync(subscriptionUpdates).ConfigureAwait(false);
         }
 
         protected TransportMessage ToTransportMessage(IMessage message) => _serializer.ToTransportMessage(message, PeerId, EndPoint);

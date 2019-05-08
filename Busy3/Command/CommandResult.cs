@@ -4,8 +4,9 @@ using System.Text;
 
 namespace Busy
 {
-    public class CommandResult
+    public class CommandResult : ICommandResult
     {
+        public static CommandResult Empty => new CommandResult(0, "empty", null);
 
         public CommandResult(int errorCode, string responseMessage, object response)
         {

@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Busy
 {
+    //refacto - review equalities
     public class MessageTypeId : IEquatable<MessageTypeId>
     {
 
@@ -42,10 +43,10 @@ namespace Busy
             return lastDotIndex != -1 ? QualifiedName.Substring(lastDotIndex + 1) : QualifiedName;
         }
 
-        public bool Equals(MessageTypeId other) => _descriptor == other._descriptor;
+        public bool Equals(MessageTypeId other) => FullName == other.FullName;
         public override bool Equals(object obj) => obj is MessageTypeId messageTypeId && Equals(messageTypeId);
 
-        public override int GetHashCode() => _descriptor?.GetHashCode() ?? 0;
+        public override int GetHashCode() => FullName.GetHashCode();
 
         public static bool operator ==(MessageTypeId left, MessageTypeId right) => left.Equals(right);
         public static bool operator !=(MessageTypeId left, MessageTypeId right) => !left.Equals(right);

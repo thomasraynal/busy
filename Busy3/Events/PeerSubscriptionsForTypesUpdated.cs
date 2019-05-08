@@ -4,14 +4,13 @@ using System.Text;
 
 namespace Busy
 {
-    [Transient]
-    public sealed class PeerSubscriptionsForTypesUpdated : IEvent
+    public class PeerSubscriptionsForTypesUpdated : IEvent
     {
-        public readonly PeerId PeerId;
+        public PeerId PeerId { get; set; }
 
-        public readonly SubscriptionsForType[] SubscriptionsForType;
+        public SubscriptionsForType[] SubscriptionsForType { get; set; }
 
-        public readonly DateTime TimestampUtc;
+        public DateTime TimestampUtc { get; set; }
 
         public PeerSubscriptionsForTypesUpdated(PeerId peerId, DateTime timestampUtc, MessageTypeId messageTypeId, params BindingKey[] bindingKeys)
         {
@@ -25,6 +24,17 @@ namespace Busy
             PeerId = peerId;
             SubscriptionsForType = subscriptionsForType;
             TimestampUtc = timestampUtc;
+        }
+
+        public PeerSubscriptionsForTypesUpdated(PeerId peerId, SubscriptionsForType[] subscriptionsForType, DateTime timestampUtc)
+        {
+            PeerId = peerId;
+            SubscriptionsForType = subscriptionsForType;
+            TimestampUtc = timestampUtc;
+        }
+
+        public PeerSubscriptionsForTypesUpdated()
+        {
         }
 
         public override string ToString() => $"PeerId: {PeerId}, TimestampUtc: {TimestampUtc:yyyy-MM-dd HH:mm:ss.fff}";

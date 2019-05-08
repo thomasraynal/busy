@@ -6,29 +6,29 @@ namespace Busy
 {
     public class PeerId
     {
-        private readonly string _value;
+      
 
         public PeerId(string value)
         {
-            _value = value;
+            Value = value;
         }
 
         public PeerId()
         {
-            _value = string.Empty;
+            Value = string.Empty;
         }
 
         public string Value { get; set; }
 
-        public bool Equals(PeerId other) => string.Equals(_value, other._value);
+        public bool Equals(PeerId other) => string.Equals(Value, other.Value);
         public override bool Equals(object obj) => obj is PeerId && Equals((PeerId)obj);
 
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => Value?.GetHashCode() ?? 0;
 
         public static bool operator ==(PeerId left, PeerId right) => left.Equals(right);
         public static bool operator !=(PeerId left, PeerId right) => !left.Equals(right);
 
-        public override string ToString() => _value ?? string.Empty;
+        public override string ToString() => Value ?? string.Empty;
 
     }
 }

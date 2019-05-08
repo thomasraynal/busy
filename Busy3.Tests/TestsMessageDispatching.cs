@@ -59,7 +59,6 @@ namespace Busy.Tests
             TestsMessageDispatchingContext2.Reset();
         }
 
-
         [Test]
         public async Task TestMessageQueue()
         {
@@ -83,7 +82,6 @@ namespace Busy.Tests
             {
                 var type = typeof(IMessageHandler<>).MakeGenericType(dispatch.Message.GetType());
                 var invoker = new MessageHandlerInvoker(cache, MessageHandlerInvokerMode.Synchronous, type);
-
                 queue.RunOrEnqueue(dispatch, invoker);
             }
 

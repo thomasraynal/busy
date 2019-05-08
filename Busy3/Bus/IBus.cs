@@ -8,6 +8,9 @@ namespace Busy
     public interface IBus : IDisposable
     {
         PeerId PeerId { get; }
+
+        Peer Self { get; }
+
         String DirectoryEndpoint { get; }
 
         void Configure(PeerId peerId, String endpoint, string directoryEndpoint);
@@ -16,6 +19,8 @@ namespace Busy
         Task<ICommandResult> Send(ICommand message);
         Task<ICommandResult> Send(ICommand message, Peer peer);
         Task Subscribe(SubscriptionRequest request);
+
+        IEnumerable<Subscription> GetSubscriptions();
 
         void Start();
         void Stop();

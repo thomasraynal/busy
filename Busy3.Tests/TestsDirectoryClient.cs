@@ -13,8 +13,8 @@ namespace Busy.Tests
         [Test]
         public void ShouldRetrieveClients()
         {
-    
-            var directoryClient = new PeerDirectoryClient();
+            var logger = new MockLogger();
+            var directoryClient = new PeerDirectoryClient(logger);
 
             var messageParisKo = new DatabaseStatus()
             {
