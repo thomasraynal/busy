@@ -104,6 +104,8 @@ namespace Busy
 
             PerformAutoSubscribe();
 
+            Task.Delay(1000).Wait();
+
         }
 
         public void Stop()

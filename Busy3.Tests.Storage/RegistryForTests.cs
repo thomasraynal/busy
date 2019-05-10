@@ -14,8 +14,8 @@ namespace Busy.Tests
         {
             For<ILogger>().Use<MockLogger>().Singleton();
             For<IMessageSerializer>().Use<JsonMessageSerializer>();
-            For<IPeerRepository>().Use<MemoryPeerRepository>();
-            For<IPeerDirectory>().Use<PeerDirectoryServer>();
+            For<IPeerRepository>().Use<MemoryPeerRepository>().Singleton();
+            For<IPeerDirectory>().Use<PeerDirectoryServer>().Singleton();
         }
     }
 }

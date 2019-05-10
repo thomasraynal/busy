@@ -13,8 +13,8 @@ namespace Busy
         void RemovePeer(PeerId peerId);
         void SetPeerResponding(PeerId peerId, bool isResponding);
 
-        void AddDynamicSubscriptionsForTypes(PeerId peerId, DateTime timestampUtc, SubscriptionsForType[] subscriptionsForTypes);
-        void RemoveDynamicSubscriptionsForTypes(PeerId peerId, DateTime timestampUtc, MessageTypeId[] messageTypeIds);
-        void RemoveAllDynamicSubscriptionsForPeer(PeerId peerId, DateTime timestampUtc);
+        void AddDynamicSubscriptionsForTypes(PeerId peerId, SubscriptionsForType[] subscriptionsForTypes);
+        void RemoveDynamicSubscriptionsForTypes(PeerId peerId, MessageTypeId[] messageTypeIds);
+        void RemoveAllDynamicSubscriptionsForPeer(PeerId peerId);
     }
 }

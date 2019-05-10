@@ -7,9 +7,9 @@ namespace Busy
 {
     public class SubscriptionsForType : IEquatable<SubscriptionsForType>
     {
-        public readonly MessageTypeId MessageTypeId;
+        public MessageTypeId MessageTypeId { get; set; }
 
-        public readonly BindingKey[] BindingKeys = Array.Empty<BindingKey>();
+        public BindingKey[] BindingKeys { get; set; } = Array.Empty<BindingKey>();
 
         public SubscriptionsForType(MessageTypeId messageTypeId, params BindingKey[] bindingKeys)
         {
@@ -17,7 +17,7 @@ namespace Busy
             BindingKeys = bindingKeys;
         }
 
-        private SubscriptionsForType()
+        public SubscriptionsForType()
         {
         }
 

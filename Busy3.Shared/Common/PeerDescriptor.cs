@@ -16,6 +16,7 @@ namespace Busy
         public PeerDescriptor(PeerId id, string endPoint, bool isUp, bool isResponding, DateTime timestampUtc, params Subscription[] subscriptions)
         {
             Peer = new Peer(id, endPoint, isUp, isResponding);
+            PeerId = Peer.Id;
             Subscriptions = subscriptions;
             TimestampUtc = timestampUtc;
         }
@@ -23,6 +24,7 @@ namespace Busy
         public PeerDescriptor(PeerDescriptor other)
         {
             Peer = new Peer(other.Peer);
+            PeerId = Peer.Id;
             Subscriptions = other.Subscriptions?.ToArray() ?? Array.Empty<Subscription>();
             TimestampUtc = other.TimestampUtc;
         }
@@ -31,7 +33,8 @@ namespace Busy
         {
         }
 
-        public PeerId PeerId => Peer.Id;
+        public PeerId PeerId { get; set; }
+
 
         public override string ToString() => Peer.ToString();
     }

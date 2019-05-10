@@ -31,15 +31,8 @@ namespace Busy
 
             foreach (var handler in handlers)
             {
-                try
-                {
-                    var invoker = _cache.GetMethodInfo(handler.GetType(), message.Message.GetType());
-                    invoker.Invoke(handler, new object[] { message.Message });
-                }
-                catch (Exception ex)
-                {
-                    message.SetHandled(MessageHandlerType, ex);
-                }
+                var invoker = _cache.GetMethodInfo(handler.GetType(), message.Message.GetType());
+                invoker.Invoke(handler, new object[] { message.Message });
             }
 
             //refacto

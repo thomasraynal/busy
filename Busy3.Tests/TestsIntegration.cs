@@ -42,21 +42,21 @@ namespace Busy.Tests
 
             await _bus.Subscribe(new SubscriptionRequest(subscription1));
 
-            await Task.Delay(100);
+            await Task.Delay(50);
 
             await _bus.Subscribe(new SubscriptionRequest(subscription2));
 
-            await Task.Delay(100);
+            await Task.Delay(50);
 
             await _bus.Send(command);
 
-            await Task.Delay(100);
+            await Task.Delay(50);
 
             Assert.AreEqual(1, GlobalTestContext.Get());
 
             _bus.Publish(@event);
 
-            await Task.Delay(100);
+            await Task.Delay(50);
 
             Assert.AreEqual(2, GlobalTestContext.Get());
 

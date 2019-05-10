@@ -1,16 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Busy
 {
-    public class PeerDirectoryServer : IPeerDirectory,
-                                      IMessageHandler<PeerStarted>,
-                                      IMessageHandler<PeerStopped>,
-                                      IMessageHandler<PeerSubscriptionsUpdated>
+    public class PeerDirectoryServer : IPeerDirectory
     {
         private readonly IPeerRepository _peerRepository;
         private Peer _self;
@@ -70,14 +68,14 @@ namespace Busy
             var subscriptionsToAdd = subsForTypes.Where(sub => sub.BindingKeys != null && sub.BindingKeys.Any()).ToArray();
             var subscriptionsToRemove = subsForTypes.Where(sub => sub.BindingKeys == null || !sub.BindingKeys.Any()).ToList();
 
-            var utcNow = DateTime.Now;
+
             if (subscriptionsToAdd.Any())
-                _peerRepository.AddDynamicSubscriptionsForTypes(_self.Id, utcNow, subscriptionsToAdd);
+                _peerRepository.AddDynamicSubscriptionsForTypes(_self.Id, subscriptionsToAdd);
 
             if (subscriptionsToRemove.Any())
-                _peerRepository.RemoveDynamicSubscriptionsForTypes(_self.Id, utcNow, subscriptionsToRemove.Select(sub => sub.MessageTypeId).ToArray());
+                _peerRepository.RemoveDynamicSubscriptionsForTypes(_self.Id, subscriptionsToRemove.Select(sub => sub.MessageTypeId).ToArray());
 
-            _bus.Publish(new PeerSubscriptionsForTypesUpdated(_self.Id, utcNow, subsForTypes.ToArray()));
+            _bus.Publish(new PeerSubscriptionsForTypesUpdated(_self.Id, DateTime.Now, subsForTypes.ToArray()));
 
             return Task.CompletedTask;
         }
@@ -89,14 +87,12 @@ namespace Busy
 
         public void Handle(PeerStarted message)
         {
+            _peerRepository.AddOrUpdatePeer(message.PeerDescriptor);
         }
 
         public void Handle(PeerStopped message)
         {
-        }
-
-        public void Handle(PeerSubscriptionsUpdated message)
-        {
+            _peerRepository.RemovePeer(message.PeerId);
         }
 
         public Task UnregisterAsync()
@@ -106,10 +102,13 @@ namespace Busy
 
         public void Handle(UpdatePeerSubscriptionsForTypesCommand message)
         {
+            _bus.Publish(new PeerSubscriptionsForTypesUpdated(message.PeerId, message.TimestampUtc, message.SubscriptionsForTypes));
+
         }
 
         public void Handle(PeerSubscriptionsForTypesUpdated message)
         {
+            _peerRepository.AddDynamicSubscriptionsForTypes(message.PeerId, message.SubscriptionsForType);
         }
     }
 }

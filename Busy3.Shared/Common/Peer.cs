@@ -6,13 +6,13 @@ namespace Busy
 {
     public class Peer
     {
-        public readonly PeerId Id;
+        public PeerId Id { get; set; }
 
-        public string EndPoint;
+        public string EndPoint { get; set; }
 
-        public bool IsUp;
+        public bool IsUp { get; set; }
 
-        public bool IsResponding;
+        public bool IsResponding { get; set; }
 
         public Peer(PeerId id, string endPoint, bool isUp = true) : this(id, endPoint, isUp, isUp)
         {
@@ -30,7 +30,7 @@ namespace Busy
             IsResponding = isResponding;
         }
 
-        private Peer()
+        public Peer()
         {
         }
 

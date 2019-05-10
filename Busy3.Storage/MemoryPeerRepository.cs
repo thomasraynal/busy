@@ -74,32 +74,31 @@ namespace Busy
             return _peers.TryGetValue(peerId, out peerEntry) ? peerEntry : null;
         }
 
-        public void AddDynamicSubscriptionsForTypes(PeerId peerId, DateTime timestampUtc, SubscriptionsForType[] subscriptionsForTypes)
+        public void AddDynamicSubscriptionsForTypes(PeerId peerId, SubscriptionsForType[] subscriptionsForTypes)
         {
             var peerEntry = GetEntry(peerId);
             if (peerEntry == null)
-                return;
-            if (!(timestampUtc >= peerEntry.PeerDescriptor.TimestampUtc))
                 return;
 
             var subscriptions = subscriptionsForTypes.SelectMany(sub => sub.BindingKeys.Select(binding => new Subscription(sub.MessageTypeId, binding))).ToList();
-            peerEntry.DynamicSubscriptions = peerEntry.DynamicSubscriptions.Concat(subscriptions).ToList();
+            peerEntry.DynamicSubscriptions = peerEntry.DynamicSubscriptions.Concat(subscriptions).Distinct().ToList();
         }
 
-        public void RemoveDynamicSubscriptionsForTypes(PeerId peerId, DateTime timestampUtc, MessageTypeId[] messageTypeIds)
+        public void RemoveDynamicSubscriptionsForTypes(PeerId peerId, MessageTypeId[] messageTypeIds)
         {
             var peerEntry = GetEntry(peerId);
             if (peerEntry == null)
                 return;
-            if (timestampUtc >= peerEntry.PeerDescriptor.TimestampUtc)
-                peerEntry.DynamicSubscriptions = peerEntry.DynamicSubscriptions.Where(sub => !messageTypeIds.Contains(sub.MessageTypeId)).ToList();
+
+            peerEntry.DynamicSubscriptions = peerEntry.DynamicSubscriptions.Where(sub => !messageTypeIds.Contains(sub.MessageTypeId)).ToList();
         }
 
-        public void RemoveAllDynamicSubscriptionsForPeer(PeerId peerId, DateTime timestampUtc)
+        public void RemoveAllDynamicSubscriptionsForPeer(PeerId peerId)
         {
             var peerEntry = GetEntry(peerId);
             if (peerEntry == null)
                 return;
+
             peerEntry.DynamicSubscriptions.Clear();
         }
     }

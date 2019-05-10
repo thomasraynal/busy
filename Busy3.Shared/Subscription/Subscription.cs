@@ -11,9 +11,9 @@ namespace Busy
         private static readonly MethodInfo _wildCardTokenMethod = typeof(Builder).GetMethod("Any");
         private int _computedHashCode;
 
-        public readonly MessageTypeId MessageTypeId;
+        public MessageTypeId MessageTypeId { get; set; }
 
-        public readonly BindingKey BindingKey;
+        public BindingKey BindingKey { get; set; }
 
         public Subscription(MessageTypeId messageTypeId)
             : this(messageTypeId, BindingKey.Empty)

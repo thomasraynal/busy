@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Busy
 {
-    public readonly struct BindingKey : IEquatable<BindingKey>
+    public struct BindingKey : IEquatable<BindingKey>
     {
         private const string _star = "*";
         private const string _sharp = "#";
@@ -16,7 +16,7 @@ namespace Busy
         private static readonly ConcurrentDictionary<Type, BindingKeyBuilder> _builders = new ConcurrentDictionary<Type, BindingKeyBuilder>();
         private static readonly Func<Type, BindingKeyBuilder> _bindingKeyBuilderFactory = CreateBuilder;
 
-        private readonly string[] _parts;
+        public string[] _parts;
 
         public BindingKey(params string[] parts)
         {
