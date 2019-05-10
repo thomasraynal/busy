@@ -7,7 +7,7 @@ namespace Busy
 {
     public class PeerDescriptor
     {
-        public readonly Peer Peer;
+        public Peer Peer { get; set; }
 
         public Subscription[] Subscriptions { get; set; }
 
@@ -20,7 +20,7 @@ namespace Busy
             TimestampUtc = timestampUtc;
         }
 
-        internal PeerDescriptor(PeerDescriptor other)
+        public PeerDescriptor(PeerDescriptor other)
         {
             Peer = new Peer(other.Peer);
             Subscriptions = other.Subscriptions?.ToArray() ?? Array.Empty<Subscription>();

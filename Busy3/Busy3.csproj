@@ -11,4 +11,8 @@
     <PackageReference Include="StructureMap" Version="4.7.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Busy3.Shared\Busy3.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

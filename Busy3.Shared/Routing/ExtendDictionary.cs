@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Busy
 {
-    internal static class ExtendDictionary
+    public static class ExtendDictionary
     {
         public static TValue GetValueOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TValue> valueBuilder)
         {

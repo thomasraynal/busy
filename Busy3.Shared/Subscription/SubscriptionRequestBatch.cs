@@ -13,7 +13,7 @@ namespace Busy
         private readonly List<SubscriptionRequest> _requests = new List<SubscriptionRequest>();
         private bool _isConsumed;
 
-        internal void AddRequest(SubscriptionRequest request)
+        public void AddRequest(SubscriptionRequest request)
         {
             EnsureNotSubmitted();
 
@@ -38,10 +38,10 @@ namespace Busy
             await WhenRegistrationCompletedAsync().ConfigureAwait(false);
         }
 
-        internal Task WhenSubmittedAsync()
+        public Task WhenSubmittedAsync()
             => _submitCompletionSource.Task;
 
-        internal void NotifyRegistrationCompleted(Exception exception)
+        public void NotifyRegistrationCompleted(Exception exception)
         {
             if (exception != null)
                 _registerCompletionSource.SetException(exception);
@@ -49,7 +49,7 @@ namespace Busy
                 _registerCompletionSource.SetResult(null);
         }
 
-        internal async Task WhenRegistrationCompletedAsync()
+        public async Task WhenRegistrationCompletedAsync()
         {
             lock (_requests)
             {
@@ -60,7 +60,7 @@ namespace Busy
             await _registerCompletionSource.Task.ConfigureAwait(false);
         }
 
-        internal IEnumerable<Subscription> TryConsumeBatchSubscriptions()
+        public IEnumerable<Subscription> TryConsumeBatchSubscriptions()
         {
             lock (_requests)
             {

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 namespace Busy
 {
     public interface IPeerDirectory : IMessageHandler<PeerStarted>,
-                                     IMessageHandler<PeerStopped>,
-                                     IMessageHandler<UpdatePeerSubscriptionsForTypesCommand>,
-                                     IMessageHandler<PeerSubscriptionsForTypesUpdated>
+                                      IMessageHandler<PeerStopped>,
+                                      IMessageHandler<UpdatePeerSubscriptionsForTypesCommand>,
+                                      IMessageHandler<PeerSubscriptionsForTypesUpdated>
     {
 
         Task RegisterAsync(Peer self, IEnumerable<Subscription> subscriptions);

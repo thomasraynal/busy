@@ -9,7 +9,7 @@ namespace Busy.Tests
     {
         public void Handle(DoSomething message)
         {
-            TestsBusContext.Increment();
+            GlobalTestContext.Increment();
         }
 
     }

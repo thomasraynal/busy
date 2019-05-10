@@ -5,7 +5,15 @@ VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Busy3", "Busy3\Busy3.csproj", "{54BD5633-7420-41B4-952B-12944F34AD66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Busy3.Tests", "Busy3.Tests\Busy3.Tests.csproj", "{4C4C0917-3399-46BE-AEFD-832A14F708D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Busy3.Tests", "Busy3.Tests\Busy3.Tests.csproj", "{4C4C0917-3399-46BE-AEFD-832A14F708D2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Busy3.Storage", "Busy3.Storage\Busy3.Storage.csproj", "{7F7D8D93-D3C3-42EC-83B6-08C9122B936F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Busy3.Tests.Storage", "Busy3.Tests.Storage\Busy3.Tests.Storage.csproj", "{90C469A7-133F-4339-96B5-DBCA108AABD7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Busy3.Tests.Shared", "Busy3.Tests.Shared\Busy3.Tests.Shared.csproj", "{99AD8B00-3DC3-4770-9D4C-0E6B446A9544}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Busy3.Shared", "Busy3.Shared\Busy3.Shared.csproj", "{EFEFF7B0-B708-442E-A825-20D1ABF1FB5B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +29,22 @@ Global
 		{4C4C0917-3399-46BE-AEFD-832A14F708D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C4C0917-3399-46BE-AEFD-832A14F708D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C4C0917-3399-46BE-AEFD-832A14F708D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F7D8D93-D3C3-42EC-83B6-08C9122B936F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F7D8D93-D3C3-42EC-83B6-08C9122B936F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F7D8D93-D3C3-42EC-83B6-08C9122B936F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F7D8D93-D3C3-42EC-83B6-08C9122B936F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90C469A7-133F-4339-96B5-DBCA108AABD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90C469A7-133F-4339-96B5-DBCA108AABD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90C469A7-133F-4339-96B5-DBCA108AABD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90C469A7-133F-4339-96B5-DBCA108AABD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99AD8B00-3DC3-4770-9D4C-0E6B446A9544}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99AD8B00-3DC3-4770-9D4C-0E6B446A9544}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99AD8B00-3DC3-4770-9D4C-0E6B446A9544}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99AD8B00-3DC3-4770-9D4C-0E6B446A9544}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFEFF7B0-B708-442E-A825-20D1ABF1FB5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFEFF7B0-B708-442E-A825-20D1ABF1FB5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFEFF7B0-B708-442E-A825-20D1ABF1FB5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFEFF7B0-B708-442E-A825-20D1ABF1FB5B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

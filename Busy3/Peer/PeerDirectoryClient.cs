@@ -72,8 +72,7 @@ namespace Busy
         {
             var peer = _peers.GetValueOrDefault(message.PeerId);
             peer.SetSubscriptionsForType(message.SubscriptionsForType ?? Enumerable.Empty<SubscriptionsForType>(), message.TimestampUtc);
-            
-           // PeerUpdated?.Invoke(message.PeerId, PeerUpdateAction.Updated);
+
         }
 
         private PeerDescriptor CreateSelfDescriptor(Peer self, IEnumerable<Subscription> subscriptions)
@@ -123,20 +122,6 @@ namespace Busy
         {
             if (message.SubscriptionsForTypes == null || message.SubscriptionsForTypes.Length == 0)
                 return;
-
-            //todo : repository
-            {
-                var self = _peers.First(peer => peer.Key == _bus.PeerId);
-
-            }
-
-            //var subscriptionsToAdd = message.SubscriptionsForTypes.Where(sub => sub.BindingKeys != null && sub.BindingKeys.Any()).ToArray();
-            //var subscriptionsToRemove = message.SubscriptionsForTypes.Where(sub => sub.BindingKeys == null || !sub.BindingKeys.Any()).ToList();
-
-            //if (subscriptionsToAdd.Any())
-            //    _peerRepository.AddDynamicSubscriptionsForTypes(message.PeerId, DateTime.SpecifyKind(message.TimestampUtc, DateTimeKind.Utc), subscriptionsToAdd);
-            //if (subscriptionsToRemove.Any())
-            //    _peerRepository.RemoveDynamicSubscriptionsForTypes(message.PeerId, DateTime.SpecifyKind(message.TimestampUtc, DateTimeKind.Utc), subscriptionsToRemove.Select(sub => sub.MessageTypeId).ToArray());
 
             _bus.Publish(new PeerSubscriptionsForTypesUpdated(message.PeerId, message.TimestampUtc, message.SubscriptionsForTypes));
         }

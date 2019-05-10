@@ -14,11 +14,6 @@ namespace Busy
             For<IMessageHandlerInvokerCache>().Use<MessageHandlerInvokerCache>().Singleton();
             For<ITransport>().Use<Transport>().Singleton();
             For<IBus>().Use<Bus>().Singleton();
-            For<IPeerDirectory>().Use<PeerDirectoryClient>().Singleton();
-            Forward<IPeerDirectory, IMessageHandler<PeerStarted>>();
-            Forward<IPeerDirectory, IMessageHandler<PeerStopped>>();
-            Forward<IPeerDirectory, IMessageHandler<UpdatePeerSubscriptionsForTypesCommand>>();
-            Forward<IPeerDirectory, IMessageHandler<PeerSubscriptionsForTypesUpdated>>();
 
             Scan(scanner =>
             {

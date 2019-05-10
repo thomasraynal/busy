@@ -39,7 +39,7 @@ namespace Busy.Tests
 
         public void Send(TransportMessage message, IEnumerable<Peer> peers)
         {
-            TestsBusContext.Increment();
+            GlobalTestContext.Increment();
         }
 
         public void Start()
@@ -53,31 +53,11 @@ namespace Busy.Tests
         }
     }
 
-    public static class TestsBusContext
-    {
-        private static volatile int _counter;
-
-        public static int Get()
-        {
-            return _counter;
-        }
-
-        public static void Increment()
-        {
-            Interlocked.Increment(ref _counter);
-        }
-
-        public static void Reset()
-        {
-            Interlocked.Exchange(ref _counter, 0);
-        }
-    }
-
+  
     [TestFixture]
     public class TestsBus
     {
         private IBus _bus;
-        private string _peerId;
         private IPeerDirectory _directory;
 
         [OneTimeSetUp]
@@ -98,7 +78,7 @@ namespace Busy.Tests
         [SetUp]
         public void SetUp()
         {
-            TestsBusContext.Reset();
+            GlobalTestContext.Reset();
         }
 
         [Test]
@@ -110,7 +90,7 @@ namespace Busy.Tests
 
             var command = new DoSomething();
 
-            Assert.AreEqual(0, TestsBusContext.Get());
+            Assert.AreEqual(0, GlobalTestContext.Get());
 
             var @event = new DatabaseStatus()
             {
@@ -121,18 +101,23 @@ namespace Busy.Tests
             _bus.Start();
 
             await _bus.Subscribe(new SubscriptionRequest(subscription1));
+
+            Assert.AreEqual(1, GlobalTestContext.Get());
+
             await _bus.Subscribe(new SubscriptionRequest(subscription2));
+
+            Assert.AreEqual(2, GlobalTestContext.Get());
 
             //as the transport is mocked, register manually
             await _directory.RegisterAsync(_bus.Self, _bus.GetSubscriptions());
 
             _bus.Publish(@event);
 
-            Assert.AreEqual(1, TestsBusContext.Get());
+            Assert.AreEqual(3, GlobalTestContext.Get());
 
             await _bus.Send(command);
 
-            Assert.AreEqual(2, TestsBusContext.Get());
+            Assert.AreEqual(4, GlobalTestContext.Get());
 
         }
     }

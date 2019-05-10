@@ -12,9 +12,9 @@ namespace Busy
 
         public bool ThereIsNoHandlerButIKnowWhatIAmDoing { get; set; }
 
-        internal SubscriptionRequestBatch Batch { get; private set; }
+        public SubscriptionRequestBatch Batch { get; private set; }
 
-        internal bool IsSubmitted { get; private set; }
+        public bool IsSubmitted { get; private set; }
 
         public SubscriptionRequest(Subscription subscription)
         {
@@ -40,7 +40,7 @@ namespace Busy
             Batch = batch;
         }
 
-        internal void MarkAsSubmitted()
+        public void MarkAsSubmitted()
         {
             EnsureNotSubmitted();
             IsSubmitted = true;
