@@ -25,11 +25,21 @@ namespace Busy
             _container = container;
         }
 
+        public IEnumerable<Subscription> AutoSubscribes { get; } = new[]{
+                    Subscription.Any<UpdatePeerSubscriptionsForTypesCommand>(),
+                    Subscription.Any<PeerStopped>(),
+                    Subscription.Any<PeerActivated>(),
+                    Subscription.Any<PeerStarted>(),
+                    Subscription.Any<PeerSubscriptionsForTypesUpdated>()
+                };
+
         public PeerId PeerId { get; internal set; }
 
         public Peer Self { get; internal set; }
 
         public string EndPoint { get; internal set; }
+
+        public IContainer Container => _container;
 
         public string DirectoryEndpoint { get; internal set; }
 
@@ -47,6 +57,9 @@ namespace Busy
         public void Publish(IEvent message)
         {
             var peersHandlingMessage = _directory.GetPeersHandlingMessage(message);
+
+            if (peersHandlingMessage.Count == 0) return;
+
             SendTransportMessage(null, message, peersHandlingMessage);
         }
 
@@ -103,7 +116,7 @@ namespace Busy
             };
 
             PerformAutoSubscribe();
-
+           
             Task.Delay(1000).Wait();
 
         }
@@ -157,16 +170,7 @@ namespace Busy
 
         private void PerformAutoSubscribe()
         {
-
-            var autoSubscribes = new[]{
-                    Subscription.Any<UpdatePeerSubscriptionsForTypesCommand>(),
-                    Subscription.Any<PeerStopped>(),
-                    Subscription.Any<PeerStarted>(),
-                    Subscription.Any<PeerSubscriptionsForTypesUpdated>()
-                };
-
-            _directory.RegisterAsync(Self, autoSubscribes).Wait();
-
+            _directory.RegisterAsync(Self, AutoSubscribes).Wait();
         }
 
         private async Task SendSubscriptionsAsync(IEnumerable<Subscription> subscriptions)

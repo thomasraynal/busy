@@ -30,15 +30,7 @@ namespace Busy.Tests
             var subscription1 = Subscription.Matching<DatabaseStatus>(status => status.DatacenterName == "Paris" && status.Status == "Ko");
             var subscription2 = Subscription.Any<DoSomething>();
 
-            var command = new DoSomething();
-
             Assert.AreEqual(0, GlobalTestContext.Get());
-
-            var @event = new DatabaseStatus()
-            {
-                DatacenterName = "Paris",
-                Status = "Ko"
-            };
 
             await _bus.Subscribe(new SubscriptionRequest(subscription1));
 
@@ -48,17 +40,53 @@ namespace Busy.Tests
 
             await Task.Delay(50);
 
+            //should be consumed
+            var command = new DoSomething();
+
             await _bus.Send(command);
 
             await Task.Delay(50);
 
             Assert.AreEqual(1, GlobalTestContext.Get());
 
+            //should be consumed
+            var @event = new DatabaseStatus()
+            {
+                DatacenterName = "Paris",
+                Status = "Ko"
+            };
+
             _bus.Publish(@event);
 
             await Task.Delay(50);
 
             Assert.AreEqual(2, GlobalTestContext.Get());
+
+            //should be consumed
+            @event = new DatabaseStatus()
+            {
+                DatacenterName = "Paris",
+                Status = "Ko"
+            };
+
+            _bus.Publish(@event);
+
+            await Task.Delay(50);
+
+            Assert.AreEqual(3, GlobalTestContext.Get());
+
+            //should not be consumed
+            @event = new DatabaseStatus()
+            {
+                DatacenterName = "Paris",
+                Status = "Ok"
+            };
+
+            _bus.Publish(@event);
+
+            await Task.Delay(50);
+
+            Assert.AreEqual(3, GlobalTestContext.Get());
 
         }
     }

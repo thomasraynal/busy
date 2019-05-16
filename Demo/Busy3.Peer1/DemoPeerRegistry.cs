@@ -1,17 +1,17 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Busy;
+using Busy3.Demo.Shared;
+using Microsoft.Extensions.Logging;
 using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Busy.Tests
+namespace Busy3.Peer1
 {
-    public class TestRegistry : Registry
+    public class DemoPeerRegistry : Registry
     {
-        public TestRegistry()
+        public DemoPeerRegistry()
         {
-            For<ILogger>().Use<MockLogger>().Singleton();
-            For<IMessageSerializer>().Use<JsonMessageSerializer>();
             For<IPeerDirectoryClient>().Use<PeerDirectoryClient>().Singleton();
             Forward<IPeerDirectoryClient, IPeerDirectory>();
             Forward<IPeerDirectory, IMessageHandler<PeerActivated>>();

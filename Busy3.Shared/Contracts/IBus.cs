@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StructureMap;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,10 @@ namespace Busy
         PeerId PeerId { get; }
 
         Peer Self { get; }
+
+        IEnumerable<Subscription> AutoSubscribes { get; }
+
+        IContainer Container { get; }
 
         String DirectoryEndpoint { get; }
 

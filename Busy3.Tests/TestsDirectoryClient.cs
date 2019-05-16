@@ -52,8 +52,8 @@ namespace Busy.Tests
             var peer1Descriptor = new PeerDescriptor(peer1.Id, peer1.EndPoint, false, true, DateTime.Now, allParisKo, allParis);
             var peer2Descriptor = new PeerDescriptor(peer2.Id, peer2.EndPoint, false, true, DateTime.Now, allKo);
 
-            directoryClient.Handle(new PeerStarted(peer1Descriptor));
-            directoryClient.Handle(new PeerStarted(peer2Descriptor));
+            directoryClient.Handle(new PeerActivated(peer1Descriptor));
+            directoryClient.Handle(new PeerActivated(peer2Descriptor));
 
             var peers = directoryClient.GetPeersHandlingMessage(messageParisKo);
 

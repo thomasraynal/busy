@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Busy
 {
-    public class PeerDirectoryServer : IPeerDirectory
+    public class PeerDirectoryServer : IPeerDirectoryServer
     {
         private readonly IPeerRepository _peerRepository;
         private Peer _self;
@@ -49,15 +49,20 @@ namespace Busy
             return _peerRepository.GetPeers();
         }
 
+        public void AddOrUpdatePeerEntry(PeerDescriptor peerDescriptor)
+        {
+            _peerRepository.AddOrUpdatePeer(peerDescriptor);
+        }
+
         public Task RegisterAsync(Peer self, IEnumerable<Subscription> subscriptions)
         {
             _self = self;
 
             var selfDescriptor = new PeerDescriptor(self.Id, self.EndPoint, self.IsUp, self.IsResponding, DateTime.Now, subscriptions.ToArray());
 
-            _peerRepository.AddOrUpdatePeer(selfDescriptor);
+            AddOrUpdatePeerEntry(selfDescriptor);
 
-            _bus.Publish(new PeerStarted(selfDescriptor));
+            _bus.Publish(new PeerActivated(selfDescriptor));
 
             return Task.CompletedTask;
         }
@@ -67,7 +72,6 @@ namespace Busy
             var subsForTypes = subscriptionsForTypes.ToList();
             var subscriptionsToAdd = subsForTypes.Where(sub => sub.BindingKeys != null && sub.BindingKeys.Any()).ToArray();
             var subscriptionsToRemove = subsForTypes.Where(sub => sub.BindingKeys == null || !sub.BindingKeys.Any()).ToList();
-
 
             if (subscriptionsToAdd.Any())
                 _peerRepository.AddDynamicSubscriptionsForTypes(_self.Id, subscriptionsToAdd);
@@ -87,7 +91,8 @@ namespace Busy
 
         public void Handle(PeerStarted message)
         {
-            _peerRepository.AddOrUpdatePeer(message.PeerDescriptor);
+            AddOrUpdatePeerEntry(message.PeerDescriptor);
+            _bus.Publish(new PeerActivated(message.PeerDescriptor));
         }
 
         public void Handle(PeerStopped message)
@@ -103,7 +108,6 @@ namespace Busy
         public void Handle(UpdatePeerSubscriptionsForTypesCommand message)
         {
             _bus.Publish(new PeerSubscriptionsForTypesUpdated(message.PeerId, message.TimestampUtc, message.SubscriptionsForTypes));
-
         }
 
         public void Handle(PeerSubscriptionsForTypesUpdated message)

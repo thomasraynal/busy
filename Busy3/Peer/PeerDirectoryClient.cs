@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Busy
 {
-    public class PeerDirectoryClient : IPeerDirectory                                      
+    public class PeerDirectoryClient : IPeerDirectoryClient
     {
 
         private readonly ConcurrentDictionary<MessageTypeId, PeerSubscriptionTree> _globalSubscriptionsIndex = new ConcurrentDictionary<MessageTypeId, PeerSubscriptionTree>();
@@ -23,6 +23,8 @@ namespace Busy
         public void Configure(IBus bus)
         {
             _bus = bus;
+
+            CreateDirectoryPeer(_bus.DirectoryEndpoint);
         }
 
         public IList<Peer> GetPeersHandlingMessage(IMessage message)
@@ -39,9 +41,22 @@ namespace Busy
             return subscriptionList.GetPeers(messageBinding.RoutingKey);
         }
 
-        private void AddOrUpdatePeerEntry(PeerDescriptor peerDescriptor)
+        private void CreateDirectoryPeer(string endPoint)
+        {
+            var peerId = new PeerId("Abc.Zebus.DirectoryService");
+            var peer = new Peer(peerId, endPoint);
+
+            var selfDescriptor = new PeerDescriptor(peer.Id, peer.EndPoint, peer.IsUp, peer.IsResponding, DateTime.Now, _bus.AutoSubscribes.ToArray());
+
+            AddOrUpdatePeerEntry(selfDescriptor);
+           
+        }
+
+        public void AddOrUpdatePeerEntry(PeerDescriptor peerDescriptor)
         {
             var subscriptions = peerDescriptor.Subscriptions ?? Array.Empty<Subscription>();
+
+            _logger.LogInformation($"Register {peerDescriptor}");
 
             var peerEntry = _peers.AddOrUpdate(peerDescriptor.PeerId,
                                                key => new PeerEntry(peerDescriptor, _globalSubscriptionsIndex),
@@ -63,7 +78,7 @@ namespace Busy
             _peers.Remove(message.PeerId);
         }
 
-        public void Handle(PeerStarted message)
+        public void Handle(PeerActivated message)
         {
             AddOrUpdatePeerEntry(message.PeerDescriptor);
         }
@@ -72,7 +87,6 @@ namespace Busy
         {
             var peer = _peers.GetValueOrDefault(message.PeerId);
             peer.SetSubscriptionsForType(message.SubscriptionsForType ?? Enumerable.Empty<SubscriptionsForType>(), message.TimestampUtc);
-
         }
 
         private PeerDescriptor CreateSelfDescriptor(Peer self, IEnumerable<Subscription> subscriptions)
@@ -83,7 +97,10 @@ namespace Busy
         public Task RegisterAsync(Peer self, IEnumerable<Subscription> subscriptions)
         {
             var selfDescriptor = CreateSelfDescriptor(self, subscriptions);
+
             AddOrUpdatePeerEntry(selfDescriptor);
+
+            _bus.Publish(new PeerStarted(selfDescriptor));
 
             return Task.CompletedTask;
         }
@@ -105,8 +122,7 @@ namespace Busy
             {
                 try
                 {
-                    await _bus.Send(command);
-
+                    var result = await _bus.Send(command);
                     return;
                 }
                 catch (Exception ex)
@@ -114,8 +130,6 @@ namespace Busy
                     _logger.LogError(ex, "Exception");
                 }
             }
-
-            throw new TimeoutException("Unable to update peer subscriptions on directory");
         }
 
         public void Handle(UpdatePeerSubscriptionsForTypesCommand message)
@@ -124,6 +138,11 @@ namespace Busy
                 return;
 
             _bus.Publish(new PeerSubscriptionsForTypesUpdated(message.PeerId, message.TimestampUtc, message.SubscriptionsForTypes));
+        }
+
+        public void Handle(PingPeerCommand message)
+        {
+            throw new NotImplementedException();
         }
     }
 }

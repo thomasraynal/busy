@@ -2,6 +2,7 @@
 using StructureMap;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Busy
@@ -21,6 +22,11 @@ namespace Busy
                 scanner.WithDefaultConventions();
                 scanner.LookForRegistries();
                 scanner.AddAllTypesOf(typeof(IMessageHandler<>));
+                scanner.Exclude((type) =>
+                {
+                    return type.GetInterfaces().Any(@interface => typeof(IPeerDirectory) == @interface);
+                });
+         
             });
 
         }

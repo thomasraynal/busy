@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AssemblyName>Busy3.Shared</AssemblyName>
+    <RootNamespace>Busy</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

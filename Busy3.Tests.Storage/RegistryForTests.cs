@@ -16,6 +16,7 @@ namespace Busy.Tests
             For<IMessageSerializer>().Use<JsonMessageSerializer>();
             For<IPeerRepository>().Use<MemoryPeerRepository>().Singleton();
             For<IPeerDirectory>().Use<PeerDirectoryServer>().Singleton();
+            Forward<IPeerDirectory, IPeerDirectoryClient>();
         }
     }
 }

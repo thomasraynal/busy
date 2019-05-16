@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,10 +38,21 @@ namespace Busy
         }
 
         private readonly ConcurrentDictionary<PeerId, PeerEntry> _peers = new ConcurrentDictionary<PeerId, PeerEntry>();
+        private ILogger _logger;
+
+        public MemoryPeerRepository(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         public void AddOrUpdatePeer(PeerDescriptor peerDescriptor)
         {
+            if (_peers.ContainsKey(peerDescriptor.PeerId)) return;
+
+            _logger.LogInformation($"Register {peerDescriptor}");
+
             var newPeerEntry = new PeerEntry(peerDescriptor);
+
             _peers.AddOrUpdate(peerDescriptor.PeerId, newPeerEntry, (peerId, existingPeerEntry) => peerDescriptor.TimestampUtc >= existingPeerEntry.PeerDescriptor.TimestampUtc ? newPeerEntry : existingPeerEntry);
         }
 

@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 
 namespace Busy.Tests
 {
+    public static class TestBusTransportTestContext
+    {
+        public static int TransportHitCounter { get; set; }
+    }
+
     public class TestBusTransport : ITransport
     {
         public TestBusTransport(PeerId peerId)
@@ -39,7 +44,7 @@ namespace Busy.Tests
 
         public void Send(TransportMessage message, IEnumerable<Peer> peers)
         {
-            GlobalTestContext.Increment();
+            TestBusTransportTestContext.TransportHitCounter++;
         }
 
         public void Start()
@@ -78,7 +83,7 @@ namespace Busy.Tests
         [SetUp]
         public void SetUp()
         {
-            GlobalTestContext.Reset();
+            TestBusTransportTestContext.TransportHitCounter = 0;
         }
 
         [Test]
@@ -100,24 +105,30 @@ namespace Busy.Tests
 
             _bus.Start();
 
+            //registration
+            Assert.AreEqual(1, TestBusTransportTestContext.TransportHitCounter);
+
             await _bus.Subscribe(new SubscriptionRequest(subscription1));
 
-            Assert.AreEqual(1, GlobalTestContext.Get());
+            Assert.AreEqual(2, TestBusTransportTestContext.TransportHitCounter);
 
             await _bus.Subscribe(new SubscriptionRequest(subscription2));
 
-            Assert.AreEqual(2, GlobalTestContext.Get());
+            Assert.AreEqual(3, TestBusTransportTestContext.TransportHitCounter);
 
             //as the transport is mocked, register manually
             await _directory.RegisterAsync(_bus.Self, _bus.GetSubscriptions());
 
+            //register directory transport call 
+            Assert.AreEqual(4, TestBusTransportTestContext.TransportHitCounter);
+
             _bus.Publish(@event);
 
-            Assert.AreEqual(3, GlobalTestContext.Get());
+            Assert.AreEqual(5, TestBusTransportTestContext.TransportHitCounter);
 
             await _bus.Send(command);
 
-            Assert.AreEqual(4, GlobalTestContext.Get());
+            Assert.AreEqual(6, TestBusTransportTestContext.TransportHitCounter);
 
         }
     }

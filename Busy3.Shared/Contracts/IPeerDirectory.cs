@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 
 namespace Busy
 {
-    public interface IPeerDirectory : IMessageHandler<PeerStarted>,
-                                      IMessageHandler<PeerStopped>,
+    public interface IPeerDirectory : IMessageHandler<PeerStopped>,
                                       IMessageHandler<UpdatePeerSubscriptionsForTypesCommand>,
                                       IMessageHandler<PeerSubscriptionsForTypesUpdated>
     {
@@ -14,7 +13,7 @@ namespace Busy
         Task RegisterAsync(Peer self, IEnumerable<Subscription> subscriptions);
         Task UpdateSubscriptionsAsync(IEnumerable<SubscriptionsForType> subscriptionsForTypes);
         Task UnregisterAsync();
-
+        void AddOrUpdatePeerEntry(PeerDescriptor peerDescriptor);
         IList<Peer> GetPeersHandlingMessage(IMessage message);
         IList<Peer> GetPeersHandlingMessage(MessageBinding messageBinding);
         void Configure(IBus bus);
